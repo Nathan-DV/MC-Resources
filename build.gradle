@@ -1,0 +1,102 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        
+        maven { url 'https://repo.spongepowered.org/maven' }
+        maven { url 'https://files.minecraftforge.net/maven' }
+    }
+    
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'org.spongepowered.mixin'
+
+group 'net.examplemod'
+version '1.0.0'
+archivesBaseName = 'ExampleMod'
+
+sourceCompatibility = targetCompatibility = '1.8'
+
+compileJava {
+    sourceCompatibility = targetCompatibility = '1.8'
+    options.encoding 'UTF-8'
+}
+
+minecraft {
+    version = project.forgeVersion
+    mappings = project.mcpVersion
+    runDir = 'run'
+    makeObfSourceJar = false
+    clientRunArgs += ["--tweakClass org.spongepowered.asm.launch.MixinTweaker", "--mixin mixins.example.json"]
+}
+
+mixin {
+    defaultObfuscationEnv searge 
+    sourceSets {
+        main {
+            ext.refMap = 'mixins.example.refmap.json'
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+
+    maven {
+        url 'https://repo.spongepowered.org/maven'
+    }
+}
+
+configurations {
+    embed
+    compile.extendsFrom embed
+}
+
+dependencies {
+    embed('org.spongepowered:mixin:0.7.11-SNAPSHOT') {
+        exclude module: 'guava'
+        exclude module: 'commons-io'
+        exclude module: 'gson'
+    }
+    
+    implementation 'org.jetbrains:annotations:22.0.0'
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+        
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+jar {
+    from(configurations.embed.collect {
+        it.isDirectory() ? it : zipTree(it)
+    }) {
+        exclude 'dummyThing',
+                'LICENSE.txt',
+                'META-INF/MUMFREY.RSA',
+                'META-INF/maven/**',
+                'org/**/*.html'
+    }
+    
+    manifest.attributes(
+            "FMLCorePluginContainsFMLMod": "true",
+            "ForceLoadAsMod": "true",
+            "MixinConfigs": "mixins.example.json",
+            "ModSide": "CLIENT",
+            "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
+            "TweakOrder": "0",
+    )
+}
