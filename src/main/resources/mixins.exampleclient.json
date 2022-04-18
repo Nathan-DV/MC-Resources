@@ -2,6 +2,8 @@
   "compatibilityLevel": "JAVA_8",
   "package": "net.exampleclient.mixins",
   "refmap": "mixins.exampleclient.refmap.json",
-  "mixins": [],
+  "mixins": [
+     "client.MixinMinecraft"
+  ],
   "verbose": true
 }
