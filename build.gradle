@@ -30,7 +30,7 @@ compileJava.options.encoding = 'UTF-8'
 
 minecraft {
     version = "1.8.9"
-    tweakClass = "net.example.launch.LaunchTweaker"
+    tweakClass = "net.exampleclient.launch.LaunchTweaker"
     runDir = "run"
     mappings = "stable_20"
     clientJvmArgs = ["-XX:-DisableExplicitGC"]
@@ -71,7 +71,7 @@ dependencies {
 
 mixin {
     defaultObfuscationEnv = "notch"
-    add sourceSets.main, "mixins.example.refmap.json"
+    add sourceSets.main, "mixins.exampleclient.refmap.json"
 }
 
 processResources {
@@ -95,8 +95,8 @@ jar {
 
 jar {
     manifest.attributes(
-            "MixinConfigs": 'mixins.example.json',
-            "TweakClass": 'net.example.launch.LaunchTweaker',
+            "MixinConfigs": 'mixins.exampleclient.json',
+            "TweakClass": 'net.exampleclient.launch.LaunchTweaker',
             "TweakOrder": 0,
             "Manifest-Version": 1.0
     )
