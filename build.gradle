@@ -1,102 +1,109 @@
 buildscript {
     repositories {
         mavenCentral()
-        
-        maven { url 'https://repo.spongepowered.org/maven' }
-        maven { url 'https://files.minecraftforge.net/maven' }
+        jcenter()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+        maven {
+            name = 'sponge'
+            url = 'https://repo.spongepowered.org/maven'
+        }
     }
-    
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
         classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
     }
 }
 
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'net.minecraftforge.gradle.tweaker-client'
 apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'java'
 
-group 'net.examplemod'
-version '1.0.0'
-archivesBaseName = 'ExampleMod'
+version = "1.0.0"
+group= "net.example"
+archivesBaseName = "Example"
 
-sourceCompatibility = targetCompatibility = '1.8'
-
-compileJava {
-    sourceCompatibility = targetCompatibility = '1.8'
-    options.encoding 'UTF-8'
-}
+sourceCompatibility = targetCompatibility = 1.8
+compileJava.options.encoding = 'UTF-8'
 
 minecraft {
-    version = project.forgeVersion
-    mappings = project.mcpVersion
-    runDir = 'run'
+    version = "1.8.9"
+    tweakClass = "net.example.launch.LaunchTweaker"
+    runDir = "run"
+    mappings = "stable_20"
+    clientJvmArgs = ["-XX:-DisableExplicitGC"]
     makeObfSourceJar = false
-    clientRunArgs += ["--tweakClass org.spongepowered.asm.launch.MixinTweaker", "--mixin mixins.example.json"]
-}
-
-mixin {
-    defaultObfuscationEnv searge 
-    sourceSets {
-        main {
-            ext.refMap = 'mixins.example.refmap.json'
-        }
-    }
 }
 
 repositories {
-    mavenCentral()
+    maven {
+        name "jitpack"
+        url "https://jitpack.io"
+    }
 
     maven {
-        url 'https://repo.spongepowered.org/maven'
+        name "spongepowered"
+        url "https://repo.spongepowered.org/maven/"
     }
+    jcenter()
+    mavenCentral()
 }
 
 configurations {
     embed
-    compile.extendsFrom embed
+    compile.extendsFrom(embed)
 }
 
 dependencies {
     embed('org.spongepowered:mixin:0.7.11-SNAPSHOT') {
+        exclude module: 'launchwrapper'
         exclude module: 'guava'
-        exclude module: 'commons-io'
         exclude module: 'gson'
+        exclude module: 'commons-io'
     }
-    
-    implementation 'org.jetbrains:annotations:22.0.0'
+    embed 'org.slick2d:slick2d-core:1.0.2'
+    embed 'com.google.code.gson:gson:2.8.5'
+
+    compile group: 'org.reflections', name: 'reflections', version: '0.9.10'
+}
+
+mixin {
+    defaultObfuscationEnv = "notch"
+    add sourceSets.main, "mixins.example.refmap.json"
 }
 
 processResources {
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
-
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-        expand 'version':project.version, 'mcversion':project.minecraft.version
-    }
-        
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
+    inputs.files "src/main/resources"
+    outputs.dir "build/classes/main"
+    copy {
+        from("src/main/resources")
+        into("build/classes/main")
     }
 }
 
 jar {
-    from(configurations.embed.collect {
-        it.isDirectory() ? it : zipTree(it)
-    }) {
-        exclude 'dummyThing',
-                'LICENSE.txt',
-                'META-INF/MUMFREY.RSA',
-                'META-INF/maven/**',
-                'org/**/*.html'
+    dependsOn configurations.compile
+    from {
+        configurations.embed.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
     }
-    
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+}
+
+jar {
     manifest.attributes(
-            "FMLCorePluginContainsFMLMod": "true",
-            "ForceLoadAsMod": "true",
-            "MixinConfigs": "mixins.example.json",
-            "ModSide": "CLIENT",
-            "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
-            "TweakOrder": "0",
+            "MixinConfigs": 'mixins.example.json',
+            "TweakClass": 'net.example.launch.LaunchTweaker',
+            "TweakOrder": 0,
+            "Manifest-Version": 1.0
     )
+
+    configurations.embed.each { dep ->
+        from(project.zipTree(dep)) {
+            exclude 'META-INF', 'META-INF/**'
+        }
+    }
 }
