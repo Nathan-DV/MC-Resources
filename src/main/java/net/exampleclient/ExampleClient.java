@@ -1,12 +1,15 @@
 package net.example;
 
-import net.minecraftforge.fml.common.Mod;
+public class ExampleClient {
 
-@Mod(modid = ExampleMod.MODID, name = ExampleMod.NAME, version = ExampleMod.VERSION)
-public class ExampleMod {
-
-    static final String MODID = "examplemod";
-    static final String NAME = "Example";
-    public static final String VERSION = "1.0.0";
+    public static ExampleClient INSTANCE = new ExampleClient();
+    
+    public void start() {
+    
+    }
+    
+    public void shutdown() {
+    
+    }
 
 }
