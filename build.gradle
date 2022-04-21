@@ -12,7 +12,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
         classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
     }
 }
@@ -29,10 +29,10 @@ sourceCompatibility = targetCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
 
 minecraft {
-    version = "1.8.9"
+    version = "1.12.2"
     tweakClass = "net.exampleclient.launch.LaunchTweaker"
     runDir = "run"
-    mappings = "stable_20"
+    mappings = "stable_39"
     clientJvmArgs = ["-XX:-DisableExplicitGC"]
     makeObfSourceJar = false
 }
