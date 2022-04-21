@@ -31,14 +31,14 @@ minecraft {
     mappings = project.mcpVersion
     runDir = 'run'
     makeObfSourceJar = false
-    clientRunArgs += ["--tweakClass org.spongepowered.asm.launch.MixinTweaker", "--mixin mixins.example.json"]
+    clientRunArgs += ["--tweakClass org.spongepowered.asm.launch.MixinTweaker", "--mixin mixins.examplemod.json"]
 }
 
 mixin {
     defaultObfuscationEnv searge 
     sourceSets {
         main {
-            ext.refMap = 'mixins.example.refmap.json'
+            ext.refMap = 'mixins.examplemod.refmap.json'
         }
     }
 }
@@ -94,7 +94,7 @@ jar {
     manifest.attributes(
             "FMLCorePluginContainsFMLMod": "true",
             "ForceLoadAsMod": "true",
-            "MixinConfigs": "mixins.example.json",
+            "MixinConfigs": "mixins.examplemod.json",
             "ModSide": "CLIENT",
             "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
             "TweakOrder": "0",
