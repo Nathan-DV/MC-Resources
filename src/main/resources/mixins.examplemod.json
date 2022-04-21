@@ -1,7 +1,7 @@
 {
   "compatibilityLevel": "JAVA_8",
   "package": "net.examplemod.mixins",
-  "refmap": "mixins.example.refmap.json",
+  "refmap": "mixins.examplemod.refmap.json",
   "mixins": [],
   "verbose": true
 }
